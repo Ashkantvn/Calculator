@@ -4,6 +4,10 @@ import { useReducer } from "react";
 
 const ACTIONS ={
   ADD_DIGIT:"add_digit",
+  SUM:"sum",
+  SUB:"sub",
+  DIVISION:"division",
+  DELETE:"delete"
 }
 
 const reducer = (state ,action)=>{
@@ -19,7 +23,8 @@ const reducer = (state ,action)=>{
         return state;
       }else{
         return {...state , first_number:state.first_number + action.payload.digit};
-      }
+      }case ACTIONS.DELETE:
+        return{...state , first_number:"0" , second_number:"0"}
     default:
       throw Error();
   }
@@ -29,12 +34,19 @@ const reducer = (state ,action)=>{
 
 /////app component
 function App() {
-  const [state, dispatch] = useReducer(reducer, {first_number:'0'})
+  const [state, dispatch] = useReducer(reducer, {first_number:'0',second_number:'0'})
 
   ///////operators of calculator
+  const handleOperatorInput=(e)=>{
+    if (e.target.textContent=="DEL") {
+      dispatch({type:ACTIONS.DELETE});
+    } else {
+      
+    }
+  }
   const operators = ["DEL" , "-" , "+" , "/"];
   const mappedOperators = operators.map(operator =>{
-    return <button key={operator}>{operator}</button>
+    return <button onClick={handleOperatorInput} key={operator}>{operator}</button>
   })
 
 
