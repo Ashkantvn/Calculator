@@ -4,9 +4,7 @@ import { useReducer } from "react";
 
 const ACTIONS ={
   ADD_DIGIT:"add_digit",
-  SUM:"sum",
-  SUB:"sub",
-  DIVISION:"division",
+  MATH:"math",
   DELETE:"delete"
 }
 
@@ -24,7 +22,13 @@ const reducer = (state ,action)=>{
       }else{
         return {...state , first_number:state.first_number + action.payload.digit};
       }case ACTIONS.DELETE:
-        return{...state , first_number:"0" , second_number:"0"}
+      return{...state , first_number:"0" , second_number:"0" , operator:""}
+      case ACTIONS.MATH:
+        if (state.second_number==="0") {
+          return{...state,  second_number:state.first_number , first_number:"0",operator:action.payload.operator};
+        } else {
+          return state;
+        }
     default:
       throw Error();
   }
@@ -34,14 +38,14 @@ const reducer = (state ,action)=>{
 
 /////app component
 function App() {
-  const [state, dispatch] = useReducer(reducer, {first_number:'0',second_number:'0'})
+  const [state, dispatch] = useReducer(reducer, {first_number:'0',second_number:'0',operator:""})
 
   ///////operators of calculator
   const handleOperatorInput=(e)=>{
-    if (e.target.textContent=="DEL") {
+    if (e.target.textContent==="DEL") {
       dispatch({type:ACTIONS.DELETE});
     } else {
-      
+      dispatch({type:ACTIONS.MATH , payload:{operator:e.target.textContent}});
     }
   }
   const operators = ["DEL" , "-" , "+" , "/"];
@@ -62,8 +66,8 @@ function App() {
   return (
     <div className="calculator">
       <div className="render">
-        <span>(0)</span>
-        <span>{state.first_number}</span>
+        <span>({state.second_number})</span>
+        <span>{state.operator + state.first_number}</span>
       </div>
       <div className="operators">
         {mappedOperators}
