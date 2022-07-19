@@ -5,11 +5,14 @@ import { useReducer } from "react";
 const ACTIONS ={
   ADD_DIGIT:"add_digit",
   MATH:"math",
-  DELETE:"delete"
+  DELETE:"delete",
+  RESULT:"result"
 }
 
 const reducer = (state ,action)=>{
   switch (action.type) {
+
+
     case ACTIONS.ADD_DIGIT:
       if (action.payload.digit === '0' && state.first_number==='0'){
         return state;
@@ -21,16 +24,34 @@ const reducer = (state ,action)=>{
         return state;
       }else{
         return {...state , first_number:state.first_number + action.payload.digit};
-      }case ACTIONS.DELETE:
-      return{...state , first_number:"0" , second_number:"0" , operator:""}
-      case ACTIONS.MATH:
+      }
+
+
+    case ACTIONS.DELETE:
+      return{...state , first_number:"0" , second_number:"0" , operator:""};
+      
+      
+      
+    case ACTIONS.MATH:
         if (state.second_number==="0") {
           return{...state,  second_number:state.first_number , first_number:"0",operator:action.payload.operator};
-        } else {
-          return state;
+        }else if (state.operator!==""){
+          return{...state,operator:action.payload.operator};
         }
+    
+    
+    case ACTIONS.RESULT:
+        if (state.operator === "+") {
+          return{...state , second_number:`${Number(state.first_number) + Number(state.second_number)}` , first_number:"0"}
+        }else if (state.operator === "-") {
+          return{...state , second_number:`${ Number(state.second_number)- Number(state.first_number) }` , first_number:"0"}
+        }else if (state.operator === "/") {
+          return{...state , second_number:`${Number(state.second_number) / Number(state.first_number)}` , first_number:"0"}
+        }
+
+        
     default:
-      throw Error();
+        throw Error();
   }
 
 }
@@ -56,7 +77,11 @@ function App() {
 
   //////numbers of calculator
   const handleNumbersInput = (e)=>{
-    dispatch({type:ACTIONS.ADD_DIGIT ,payload:{digit:`${e.target.textContent}`}});
+    if (e.target.textContent==="=") {
+      dispatch({type : ACTIONS.RESULT})
+    } else {
+      dispatch({type:ACTIONS.ADD_DIGIT ,payload:{digit:`${e.target.textContent}`}});
+    }
   }
   const numbers = ["1","2","3","4","5","6","7","8","9",".","0" ,"="];
   const mappedNumbers = numbers.map(number=>{
